@@ -1,0 +1,30 @@
+name: Auto Update
+
+# Запускать workflow каждые 2 минуты
+on:
+  schedule:
+    - cron: '*/2 * * * *'
+  workflow_dispatch:  # Возможность запуска вручную
+
+jobs:
+  update-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Configure Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Pull latest changes
+      run: |
+        git remote add source https://github.com/username/source-repo.git
+        git fetch source
+        git merge source/main --no-edit
+
+    - name: Push changes
+      run: |
+        git push origin main
